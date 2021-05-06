@@ -236,11 +236,13 @@ check_quoted_cr_mail () {
 	test_cmp "$DATA/quoted-cr-info" quoted-cr-info
 }
 
-test_expect_success 'mailinfo warn CR in base64 encoded email' '
+test_expect_success 'mailinfo handle CR in base64 encoded email' '
 	sed "s/%%/$(printf \\015)/" "$DATA/quoted-cr-msg" >expect-cr-msg &&
 	sed "s/%%/$(printf \\015)/" "$DATA/quoted-cr-patch" >expect-cr-patch &&
 	check_quoted_cr_mail &&
-	grep "quoted CR detected" quoted-cr-err
+	grep "quoted CR detected" quoted-cr-err &&
+	check_quoted_cr_mail --quoted-cr=nowarn &&
+	test_must_be_empty quoted-cr-err
 '
 
 test_done
