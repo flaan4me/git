@@ -228,4 +228,19 @@ test_expect_success 'mailinfo handles unusual header whitespace' '
 	test_cmp expect actual
 '
 
+check_quoted_cr_mail () {
+	git mailinfo -u "$@" quoted-cr-msg quoted-cr-patch \
+		<"$DATA/quoted-cr.mbox" >quoted-cr-info 2>quoted-cr-err &&
+	test_cmp "expect-cr-msg" quoted-cr-msg &&
+	test_cmp "expect-cr-patch" quoted-cr-patch &&
+	test_cmp "$DATA/quoted-cr-info" quoted-cr-info
+}
+
+test_expect_success 'mailinfo warn CR in base64 encoded email' '
+	sed "s/%%/$(printf \\015)/" "$DATA/quoted-cr-msg" >expect-cr-msg &&
+	sed "s/%%/$(printf \\015)/" "$DATA/quoted-cr-patch" >expect-cr-patch &&
+	check_quoted_cr_mail &&
+	grep "quoted CR detected" quoted-cr-err
+'
+
 test_done
