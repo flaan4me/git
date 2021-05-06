@@ -242,6 +242,10 @@ test_expect_success 'mailinfo handle CR in base64 encoded email' '
 	check_quoted_cr_mail &&
 	grep "quoted CR detected" quoted-cr-err &&
 	check_quoted_cr_mail --quoted-cr=nowarn &&
+	test_must_be_empty quoted-cr-err &&
+	sed "s/%%//" "$DATA/quoted-cr-msg" >expect-cr-msg &&
+	sed "s/%%//" "$DATA/quoted-cr-patch" >expect-cr-patch &&
+	check_quoted_cr_mail --quoted-cr=strip &&
 	test_must_be_empty quoted-cr-err
 '
 
